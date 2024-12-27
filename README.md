@@ -1,7 +1,8 @@
 # **Mnemonic Adaptor**
 
-![image]\(https\://github.com/user-attachments/assets/08788f4a-4c06-4d2f-9ff4-cf9212e2928c)
-
+<div align="center">
+![image](https://github.com/user-attachments/assets/b7252e05-a9ab-4474-ab3c-eb6a9227a725)
+</div>
 
 
 A sophisticated Python utility for advanced memory segmentation and extraction, leveraging large language models (LLMs) through the Ollama API. This tool distinguishes itself with its modular architecture, seamless customization via external prompt files, and its capability to efficiently process extensive input data by dynamically segmenting text into coherent "core memories." These outputs are structured as JSON objects, enabling their direct integration into AI-driven systems and workflows.&#x20;
