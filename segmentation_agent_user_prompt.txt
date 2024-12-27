@@ -1,0 +1,7 @@
+{INPUT_TEXT}
+
+Please read the above text and produce a JSON array of strings. 
+Each string should be "core_memory:context" with no extra keys or structure with the format:
+[
+  "core_memory:context",
+]
