@@ -1,7 +1,7 @@
 # **Mnemonic Adaptor**
 
 <div align="center">
-![image](https://github.com/user-attachments/assets/b7252e05-a9ab-4474-ab3c-eb6a9227a725)
+<img src="https://github.com/user-attachments/assets/b7252e05-a9ab-4474-ab3c-eb6a9227a725" width="600">
 </div>
 
 
