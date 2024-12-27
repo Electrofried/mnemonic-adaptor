@@ -1,48 +1,81 @@
-# **mnemonic adaptor**
-![image](https://github.com/user-attachments/assets/3dcdb657-d1c0-490a-b385-269abbff7286)
+# **Mnemonic Adaptor**
 
-A Python-based utility for advanced memory segmentation and extraction using large language models (LLMs) via the Ollama API. This script processes user inputs (files or raw text), segments them into meaningful "core memories," and generates structured memory objects in JSON format, ready for use in AI-driven workflows.
+![image]\(https\://github.com/user-attachments/assets/08788f4a-4c06-4d2f-9ff4-cf9212e2928c)
 
-## **Features**:
-- **Configurable and Modular**: Centralized configuration for API endpoints, model parameters, and processing options.
-- **Prompt Management**: Load and customize system and user prompts dynamically from external files.
-- **Chunked Processing**: Automatically handles large inputs by splitting them into manageable chunks for processing.
-- **Memory Segmentation**: Extracts key information from text, with support for structured JSON output.
-- **Error Handling**: Robust error management for file operations, API calls, and JSON parsing.
-- **Output Management**: Saves extracted memories as uniquely named JSON files in an organized directory.
+
+
+A sophisticated Python utility for advanced memory segmentation and extraction, leveraging large language models (LLMs) through the Ollama API. This tool distinguishes itself with its modular architecture, seamless customization via external prompt files, and its capability to efficiently process extensive input data by dynamically segmenting text into coherent "core memories." These outputs are structured as JSON objects, enabling their direct integration into AI-driven systems and workflows.&#x20;
+
+---
+
+## **Key Features**
+
+- **Configurable and Modular Design** 🛠️: Centralized configuration for API endpoints, model parameters, and operational settings ensures flexibility and scalability.
+- **Dynamic Prompt Management** ✏️: Load and customize system and user prompts via external files, tailoring workflows to diverse applications.
+- **Advanced Memory Segmentation** 🧠: Extract and organize critical information from text, generating structured JSON outputs for downstream processing.
+- **Chunked Input Processing** 🔄: Handle large text inputs by dividing them into manageable segments without losing coherence or context.
+- **Robust Error Handling** 🛡️: Comprehensive error management addresses potential issues with file operations, API communication, and JSON parsing.
+- **Efficient Output Management** 📁: Save extracted memory objects as uniquely named JSON files, systematically organized within a designated output directory. 
+
+---
 
 ## **Why Use This Tool?**
-This tool is ideal for developers, researchers, and enthusiasts working with LLMs to:
-- Extract structured data from unstructured text.
-- Implement memory augmentation or knowledge persistence in AI systems.
-- Simplify API-based workflows with streamlined automation.
 
-## **Requirements**:
-- Python 3.7+
-- `requests` library for API communication.
-- Access to an Ollama server for model interactions.
+This utility is particularly suited for researchers, developers, and AI practitioners working with LLMs who aim to:
 
-## **Getting Started**:
-1. Clone the repository:
+- Extract structured insights from unstructured data, such as synthesizing information from extensive reports or summarizing collaborative meeting transcripts. 
+- Implement persistent memory modules within AI systems to support applications like personal knowledge management, context-aware assistance, or decision-making frameworks. 
+- Streamline API workflows, automating complex tasks such as customer sentiment analysis, content classification, and thematic research synthesis. 
+
+---
+
+## **Requirements**
+
+- Python 3.7+ 🐍
+- `requests` library for API interactions 🌐
+- Access to a functional Ollama server for model communication 
+
+---
+
+## **Getting Started**
+
+1. **Clone the repository** 🛠️:
+
    ```bash
    git clone https://github.com/<your-username>/ollama-memory-agent.git
    cd ollama-memory-agent
    ```
-2. Install dependencies:
+
+2. **Install dependencies** 📦:
+
    ```bash
    pip install -r requirements.txt
    ```
-3. Configure settings in the `CONFIG` dictionary in `main.py`.
-4. Run the script with your input:
+
+3. **Configure settings** ⚙️:
+   Adjust the `CONFIG` dictionary within `main.py` to align with your specific requirements.
+
+4. **Run the script** ▶️:
+
    ```bash
    python main.py "Your text here"
    python main.py /path/to/text_file.txt
    ```
 
-## **Customization**:
-Easily modify the system and user prompts by editing the corresponding `.txt` files:
-- `segmentation_agent_system_prompt.txt`
-- `memory_extraction_agent_system_prompt.txt`
+---
 
-## **Contributing**:
-Contributions are welcome! Feel free to submit issues or pull requests to help improve this project.
+## **Customization**
+
+System and user prompts can be tailored to specific use cases by modifying the respective `.txt` files. For example, you can adjust the tone, level of detail, or domain specificity to align with tasks such as generating concise technical summaries or simplifying content for general audiences. These adjustments directly influence the tool's output, ensuring it is adaptable and purpose-driven.&#x20;
+
+Editable prompt files include:
+
+- `segmentation_agent_system_prompt.txt` ✏️
+- `memory_extraction_agent_system_prompt.txt` 🗒️
+
+---
+
+## **Contributing**
+
+We welcome contributions from the community! Whether it’s submitting issues, proposing enhancements, or providing pull requests, your input is invaluable to the continuous improvement of this project.&#x20;
+
