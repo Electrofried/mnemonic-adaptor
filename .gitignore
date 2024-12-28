@@ -6,4 +6,6 @@ __pycache__/
 outputs/
 .vscode/
 *.log
+bob.txt
+api.txt
 "
