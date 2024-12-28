@@ -16,8 +16,10 @@ A simple yet powerful example of LLM-based computation for creating mnemonic dev
 - **Dynamic Prompt Management** ✏️: Easily load and customize system and user prompts via external files, enabling tailored workflows for varied use cases.
 - **Advanced Memory Segmentation** 🧠: Extract and organize critical information from text, generating structured JSON outputs suitable for downstream processing.
 - **Chunked Input Processing** 🔄: Handles large text inputs by dividing them into manageable segments while preserving coherence for inputs up to **20,000 characters**.
-- **Robust Error Handling** 🛡️: Implements comprehensive error management to address issues with file operations, API communication, and JSON parsing.
-- **Efficient Output Management** 📁: Saves extracted memory objects as uniquely named JSON files, systematically organized within a designated output directory.
+- **Robust Error Handling** 🛡️: Implements comprehensive error management with detailed logging to address issues with file operations, API communication, and JSON parsing.
+- **Efficient Output Management** 📁: Saves extracted memory objects as uniquely named JSON files, systematically organized within a designated output directory with detailed logging.
+- **Type Safety** ✅: Comprehensive type hints throughout the codebase for better IDE support and code clarity.
+- **Centralized Logging** 📝: Structured logging system with both file and console output for better debugging and monitoring.
 
 ---
 
@@ -55,7 +57,7 @@ This utility is designed for researchers, developers, and AI practitioners who n
    ```
 
 3. **Configure settings** ⚙️:
-   Adjust the `CONFIG` dictionary within `config.py` to align with your specific requirements. Ensure you have your DeepSeek API key in the `api.txt` file.
+   Adjust the configuration in `config.py` to align with your specific requirements. The configuration uses a `Config` dataclass for type safety and validation. Ensure you have your DeepSeek API key in the `api.txt` file or set it as an environment variable.
 
 4. **Run the script** ▶️:
 
@@ -84,12 +86,4 @@ For detailed contribution guidelines, refer to the `CONTRIBUTING.md` file in the
 
 ---
 
-## **Changelog**
-
-### **Latest Changes**
-- **Increased Chunk Size**: The system now supports processing text chunks of up to **20,000 characters**, allowing for more efficient handling of large inputs.
-- **DeepSeek Integration**: The project can now use DeepSeek's advanced chat model for improved memory extraction and segmentation.
-
 ---
-
-

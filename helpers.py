@@ -5,8 +5,10 @@ This maintains backward compatibility while providing a more organized structure
 
 import os
 from typing import Dict, Any, Optional, Union, List
+from pathlib import Path
+import logging
+from logging_config import get_logger
 
-from utils import utils
 from utils.text_processing import split_text_with_overlap, process_large_file
 from utils.file_io import (
     load_prompt_from_file,
@@ -16,8 +18,9 @@ from utils.file_io import (
 from utils.api import call_ollama, extract_json_from_llm_output
 from config import CONFIG
 
-@utils
-def process_input(input_source: str) -> List[str]:
+logger = get_logger(__name__)
+
+def process_input(input_source: Union[str, Path]) -> List[str]:
     """
     Reads input from a text file if the input_source is a file path,
     otherwise treats the input_source as raw text.
@@ -35,35 +38,35 @@ def process_input(input_source: str) -> List[str]:
     if os.path.isfile(input_source):
         try:
             file_size = os.path.getsize(input_source)
-            print(f"Processing file of size: {file_size / (1024*1024):.2f} MB")
+            logger.info(f"Processing file of size: {file_size / (1024*1024):.2f} MB")
             
-            if file_size > CONFIG["MAX_FILE_SIZE"]:
+            if file_size > CONFIG.max_file_size:
                 raise ValueError(
                     f"File size ({file_size / (1024*1024):.2f} MB) exceeds maximum allowed size "
-                    f"({CONFIG['MAX_FILE_SIZE'] / (1024*1024):.2f} MB)"
+                    f"({CONFIG.max_file_size / (1024*1024):.2f} MB)"
                 )
             
-            if file_size > CONFIG["LARGE_FILE_THRESHOLD"]:
-                print("Large file detected. Using streaming mode...")
-                return process_large_file(input_source, CONFIG["BUFFER_SIZE"])
+            if file_size > CONFIG.large_file_threshold:
+                logger.info("Large file detected. Using streaming mode...")
+                return process_large_file(input_source, CONFIG.buffer_size)
             
             with open(input_source, "r", encoding="utf-8") as file:
                 input_text = file.read()
                 
         except IOError as e:
-            print(f"Error reading input file: {e}")
+            logger.error(f"Error reading input file: {e}")
             return []
     else:
         input_text = input_source
-        if len(input_text) > CONFIG["LARGE_FILE_THRESHOLD"]:
-            print("Warning: Very large text input. Processing may take a while...")
+        if len(input_text) > CONFIG.large_file_threshold:
+            logger.warning("Very large text input. Processing may take a while...")
 
     if not input_text:
         return []
 
-    print("Starting text chunking...")
+    logger.info("Starting text chunking...")
     return split_text_with_overlap(
         text=input_text,
-        chunk_size=CONFIG["CHUNK_SIZE"],
-        overlap=CONFIG["CHUNK_OVERLAP"]
+        chunk_size=CONFIG.chunk_size,
+        overlap=CONFIG.chunk_overlap
     )

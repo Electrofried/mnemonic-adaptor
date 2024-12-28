@@ -1,7 +1,11 @@
 import json
+from typing import List, Optional
+import logging
+from logging_config import get_logger
 from helpers import call_ollama, extract_json_from_llm_output
 from config import CONFIG
-from typing import List
+
+logger = get_logger(__name__)
 
 # Load static prompts from a JSON file at the module level
 try:
@@ -11,9 +15,10 @@ try:
         if not all(key in PROMPTS for key in required_keys):
             raise ValueError(f"JSON file must contain {required_keys}")
 except (FileNotFoundError, IOError, ValueError) as e:
-    print(f"Error loading static prompts from JSON file: {e}")
+    logger.error(f"Error loading static prompts from JSON file: {e}")
     PROMPTS = {}
-def segment_input_into_chunks(input_text: str) -> List[str]:
+
+def segment_input_into_chunks(input_text: str) -> Optional[List[str]]:
     """
     Requests a segmentation from the LLM that identifies only the most
     important or memorable pieces of the input. We expect a JSON list of
@@ -21,11 +26,11 @@ def segment_input_into_chunks(input_text: str) -> List[str]:
     """
 
     if not input_text:
-        print("Empty input text received.")
+        logger.error("Empty input text received.")
         return []
 
     if not PROMPTS:
-        print("Static prompts are not available. Ensure 'prompts.json' is correctly configured.")
+        logger.error("Static prompts are not available. Ensure 'prompts.json' is correctly configured.")
         return []
 
     # Retrieve the system and user prompts from the static JSON
@@ -41,18 +46,18 @@ def segment_input_into_chunks(input_text: str) -> List[str]:
         system_prompt=system_prompt
     )
 
-    print(f"[Debug] Raw segmentation output:\n{raw_segmentation}")
+    logger.debug(f"Raw segmentation output:\n{raw_segmentation}")
 
     # Attempt to parse JSON via our helper
     segmentation_response = extract_json_from_llm_output(raw_segmentation)
     if segmentation_response is None:
-        print("Segmentation LLM output did not contain valid JSON. Returning [].")
+        logger.error("Segmentation LLM output did not contain valid JSON. Returning [].")
         return []
 
     if not isinstance(segmentation_response, list):
-        print("Segmentation did not return a JSON list. Unexpected format.")
+        logger.error("Segmentation did not return a JSON list. Unexpected format.")
         return []
     return segmentation_response
 
-print(f"[Config] Using model: {CONFIG['MODEL_NAME']}")
-print(f"[Config] Temperature: {CONFIG['TEMPERATURE']}")
+logger.info(f"Using model: {CONFIG.model_name}")
+logger.info(f"Temperature: {CONFIG.temperature}")

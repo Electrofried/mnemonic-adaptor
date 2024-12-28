@@ -2,11 +2,14 @@
 Text processing utilities for chunking and handling large text inputs.
 """
 
+from typing import List
+import logging
+from logging_config import get_logger
 from config import CONFIG
-from utils import utils
 
-@utils
-def split_text_with_overlap(text, chunk_size=2000, overlap=200):
+logger = get_logger(__name__)
+
+def split_text_with_overlap(text: str, chunk_size: int = 2000, overlap: int = 200) -> List[str]:
     """
     Splits input text into overlapping chunks of specified size.
     Optimized for large files with progress feedback.
@@ -37,7 +40,7 @@ def split_text_with_overlap(text, chunk_size=2000, overlap=200):
         
         chunk_count += 1
         progress = (start / total_length) * 100
-        print(f"\rChunking progress: {progress:.1f}% (Chunk {chunk_count}/{estimated_chunks})", end="", flush=True)
+        logger.info(f"Chunking progress: {progress:.1f}% (Chunk {chunk_count}/{estimated_chunks})")
         
         if end == total_length:
             break
@@ -47,11 +50,10 @@ def split_text_with_overlap(text, chunk_size=2000, overlap=200):
         if start >= total_length:
             break
     
-    print("\nChunking completed.")
+    logger.info("Chunking completed.")
     return chunks
 
-@utils
-def process_large_file(file_path, buffer_size=1024*1024):
+def process_large_file(file_path: str, buffer_size: int = 1024*1024) -> List[str]:
     """
     Process a large file in streaming mode to avoid memory issues.
     
@@ -64,8 +66,8 @@ def process_large_file(file_path, buffer_size=1024*1024):
     """
     chunks = []
     current_chunk = ""
-    chunk_size = CONFIG["CHUNK_SIZE"]
-    overlap = CONFIG.get("CHUNK_OVERLAP", 200)
+    chunk_size = CONFIG.chunk_size
+    overlap = CONFIG.chunk_overlap
     
     try:
         with open(file_path, "r", encoding="utf-8") as file:
@@ -80,14 +82,14 @@ def process_large_file(file_path, buffer_size=1024*1024):
                     chunks.append(current_chunk[:chunk_size])
                     current_chunk = current_chunk[chunk_size-overlap:]
                     
-                print(f"\rProcessed: {len(chunks)} chunks", end="", flush=True)
+                logger.info(f"Processed: {len(chunks)} chunks")
             
             if current_chunk:
                 chunks.append(current_chunk)
                 
-        print(f"\nCompleted processing {len(chunks)} chunks from large file.")
+        logger.info(f"Completed processing {len(chunks)} chunks from large file.")
         return chunks
         
     except IOError as e:
-        print(f"Error processing large file: {e}")
-        return chunks 
+        logger.error(f"Error processing large file: {e}")
+        return chunks

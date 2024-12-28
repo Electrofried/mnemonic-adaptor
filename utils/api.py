@@ -9,14 +9,11 @@ import requests
 from typing import Dict, Any, Optional, Union
 
 from config import CONFIG, HEADERS, OLLAMA_URL
-from utils import utils
-
-@utils
 def call_ollama(
     user_prompt: str,
     system_prompt: str = "",
-    model: str = CONFIG["MODEL_NAME"],
-    temperature: float = CONFIG["TEMPERATURE"],
+    model: str = CONFIG.model_name,
+    temperature: float = CONFIG.temperature,
     max_retries: int = 3,
     retry_delay: int = 1
 ) -> str:
@@ -43,7 +40,7 @@ def call_ollama(
         ],
         "temperature": temperature,
         "options": {
-            "num_ctx": CONFIG["GENERATION_WINDOW"],
+            "num_ctx": CONFIG.generation_window,
         },
         "stream": False,
         "raw": False
@@ -55,7 +52,7 @@ def call_ollama(
                 f"{OLLAMA_URL}chat/completions",
                 json=payload,
                 headers=HEADERS,
-                timeout=CONFIG["REQUEST_TIMEOUT"]
+                timeout=CONFIG.request_timeout
             )
             response.raise_for_status()
             response_data = response.json()
@@ -80,7 +77,6 @@ def call_ollama(
             print(f"Unexpected response format from Ollama: {e}")
             return ""
 
-@utils
 def extract_json_from_llm_output(llm_output: str) -> Optional[Union[Dict[str, Any], list]]:
     """
     Attempts to extract strictly valid JSON from the LLM output.
@@ -105,4 +101,4 @@ def extract_json_from_llm_output(llm_output: str) -> Optional[Union[Dict[str, An
         return json.loads(llm_output)
     except json.JSONDecodeError:
         print("Failed to parse JSON from entire LLM output.")
-        return None 
+        return None

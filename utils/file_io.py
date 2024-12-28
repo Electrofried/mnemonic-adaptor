@@ -5,11 +5,13 @@ File input/output utilities for handling prompts, JSON, and memory objects.
 import os
 import json
 import uuid
-from typing import Dict, Any
+import logging
+from typing import Dict, Any, Optional
+from pathlib import Path
+from logging_config import get_logger
 
-from utils import utils
+logger = get_logger(__name__)
 
-@utils
 def load_prompt_from_file(prompt_filename: str) -> str:
     """
     Loads and returns the text from the specified prompt file.
@@ -32,7 +34,6 @@ def load_prompt_from_file(prompt_filename: str) -> str:
     except IOError as e:
         raise IOError(f"Error reading prompt file {prompt_filename}: {e}")
 
-@utils
 def save_json_to_file(data: Dict[str, Any], filename: str) -> None:
     """
     Saves JSON data to a specified file.
@@ -45,12 +46,11 @@ def save_json_to_file(data: Dict[str, Any], filename: str) -> None:
         os.makedirs(os.path.dirname(filename), exist_ok=True)
         with open(filename, "w", encoding="utf-8") as file:
             json.dump(data, file, indent=2, ensure_ascii=False)
-        print(f"JSON data saved to {filename}")
+        logger.info(f"JSON data saved to {filename}")
     except IOError as e:
-        print(f"Error saving JSON to {filename}: {e}")
+        logger.error(f"Error saving JSON to {filename}: {e}")
 
-@utils
-def save_memory_to_file(memory_object: Dict[str, Any], output_dir: str = None) -> None:
+def save_memory_to_file(memory_object: Dict[str, Any], output_dir: Optional[str] = None) -> None:
     """
     Saves the memory object as a unique JSON file in the specified directory.
     
@@ -66,6 +66,6 @@ def save_memory_to_file(memory_object: Dict[str, Any], output_dir: str = None) -
         filename = os.path.join(output_dir, f"memory_{uuid.uuid4().hex}.json")
         with open(filename, "w", encoding="utf-8") as file:
             json.dump(memory_object, file, indent=2, ensure_ascii=False)
-        print(f"Memory saved to {filename}")
+        logger.info(f"Memory saved to {filename}")
     except IOError as e:
-        print(f"Error saving memory to file: {e}") 
+        logger.error(f"Error saving memory to file: {e}")
