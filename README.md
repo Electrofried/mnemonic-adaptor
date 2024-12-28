@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<img src="https\://github.com/user-attachments/assets/b7252e05-a9ab-4474-ab3c-eb6a9227a725" width="600">
+<img src="https://github.com/user-attachments/assets/b7252e05-a9ab-4474-ab3c-eb6a9227a725" width="600">
 
 </div>
 
@@ -15,7 +15,7 @@ A simple yet powerful example of LLM-based computation for creating mnemonic dev
 - **Configurable and Modular Design** 🛠️: Centralized configuration for API endpoints, model parameters, and operational settings ensures flexibility and scalability.
 - **Dynamic Prompt Management** ✏️: Easily load and customize system and user prompts via external files, enabling tailored workflows for varied use cases.
 - **Advanced Memory Segmentation** 🧠: Extract and organize critical information from text, generating structured JSON outputs suitable for downstream processing.
-- **Chunked Input Processing** 🔄: Handles large text inputs by dividing them into manageable segments while preserving coherence for inputs up to 3500 characters.
+- **Chunked Input Processing** 🔄: Handles large text inputs by dividing them into manageable segments while preserving coherence for inputs up to **20,000 characters**.
 - **Robust Error Handling** 🛡️: Implements comprehensive error management to address issues with file operations, API communication, and JSON parsing.
 - **Efficient Output Management** 📁: Saves extracted memory objects as uniquely named JSON files, systematically organized within a designated output directory.
 
@@ -35,7 +35,7 @@ This utility is designed for researchers, developers, and AI practitioners who n
 
 - Python 3.7+ 🐍
 - `requests` library for API interactions 🌐
-- Access to a functional Ollama server for model communication 📡💾🔌
+- Access to a functional **DeepSeek API** for model communication 📡💾🔌
 
 ---
 
@@ -44,8 +44,8 @@ This utility is designed for researchers, developers, and AI practitioners who n
 1. **Clone the repository** 🛠️:
 
    ```bash
-   git clone https://github.com/<your-username>/ollama-memory-agent.git
-   cd ollama-memory-agent
+   git clone https://github.com/<your-username>/mnemonic-adaptor.git
+   cd mnemonic-adaptor
    ```
 
 2. **Install dependencies** 📦:
@@ -55,7 +55,7 @@ This utility is designed for researchers, developers, and AI practitioners who n
    ```
 
 3. **Configure settings** ⚙️:
-   Adjust the `CONFIG` dictionary within `main.py` to align with your specific requirements.
+   Adjust the `CONFIG` dictionary within `config.py` to align with your specific requirements. Ensure you have your DeepSeek API key in the `api.txt` file.
 
 4. **Run the script** ▶️:
 
@@ -68,12 +68,11 @@ This utility is designed for researchers, developers, and AI practitioners who n
 
 ## **Customization**
 
-Tailor system and user prompts to specific use cases by modifying the respective `.txt` files. For example, you can adjust tone, level of detail, or domain specificity to align with tasks such as generating concise technical summaries or simplifying content for general audiences. These adjustments directly influence the tool's output, ensuring it remains adaptable and purpose-driven.
+Tailor system and user prompts to specific use cases by modifying the respective `.json` files. For example, you can adjust tone, level of detail, or domain specificity to align with tasks such as generating concise technical summaries or simplifying content for general audiences. These adjustments directly influence the tool's output, ensuring it remains adaptable and purpose-driven.
 
 Editable prompt files include:
 
-- `segmentation_agent_system_prompt.txt` ✏️
-- `memory_extraction_agent_system_prompt.txt` 🗒️
+- `prompts.json` ✏️: Contains system and user prompts for memory extraction and segmentation.
 
 ---
 
@@ -82,4 +81,15 @@ Editable prompt files include:
 We welcome contributions from the community! Whether it’s submitting issues, proposing enhancements, or providing pull requests, your input is invaluable to the continuous improvement of this project. 🙌🌍🤝
 
 For detailed contribution guidelines, refer to the `CONTRIBUTING.md` file in the repository. 💡🎉✨
+
+---
+
+## **Changelog**
+
+### **Latest Changes**
+- **Increased Chunk Size**: The system now supports processing text chunks of up to **20,000 characters**, allowing for more efficient handling of large inputs.
+- **DeepSeek Integration**: The project can now use DeepSeek's advanced chat model for improved memory extraction and segmentation.
+
+---
+
 
