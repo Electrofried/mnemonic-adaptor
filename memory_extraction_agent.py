@@ -63,6 +63,16 @@ def mnemonic_extraction_agent(full_chunk, core_memory_text):
         print("Mnemonic extraction output is not a JSON object. Skipping.")
         return {}
 
+    tags = memory_update.get("tags", [])
+    
+    # Check if there are fewer than 3 tags
+    if len(tags) < 3:
+        # Log the file with insufficient tags
+        with open('memory_validation_errors.log', 'a') as error_log:
+            error_log.write(f"ERROR_TYPE: insufficient_tags, FILE: {memory_update.get('source', 'unknown')}, TAG_COUNT: {len(tags)}, TAGS: {tags}\n")
+    
+    memory_update["tags"] = tags
+
     return {
         "type": memory_update.get("type", "memory_update"),
         "memory": memory_update.get("memory", ""),

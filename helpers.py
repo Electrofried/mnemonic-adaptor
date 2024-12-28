@@ -1,147 +1,69 @@
+"""
+Wrapper module that re-exports utility functions from the utils package.
+This maintains backward compatibility while providing a more organized structure.
+"""
+
 import os
-import json
-import requests
-import uuid
-import re
+from typing import Dict, Any, Optional, Union, List
 
-from config import CONFIG, HEADERS, OLLAMA_URL
+from utils import utils
+from utils.text_processing import split_text_with_overlap, process_large_file
+from utils.file_io import (
+    load_prompt_from_file,
+    save_json_to_file,
+    save_memory_to_file
+)
+from utils.api import call_ollama, extract_json_from_llm_output
+from config import CONFIG
 
-def load_prompt_from_file(prompt_filename):
-    """
-    Loads and returns the text from the specified prompt file, or raises an exception if not found.
-    """
-    if not os.path.isfile(prompt_filename):
-        raise FileNotFoundError(f"Prompt file not found: {prompt_filename}")
-    try:
-        with open(prompt_filename, "r", encoding="utf-8") as file:
-            return file.read()
-    except IOError as e:
-        raise IOError(f"Error reading prompt file {prompt_filename}: {e}")
-
-def save_json_to_file(data, filename):
-    """
-    Saves JSON data to a specified file.
-    """
-    try:
-        with open(filename, "w", encoding="utf-8") as file:
-            json.dump(data, file, indent=2, ensure_ascii=False)
-        print(f"JSON data saved to {filename}")
-    except IOError as e:
-        print(f"Error saving JSON to {filename}: {e}")
-
-def save_memory_to_file(memory_object, output_dir=os.path.abspath(CONFIG["OUTPUT_DIR"])):
-    """
-    Saves the memory object as a unique JSON file in the specified directory.
-    """
-    try:
-        os.makedirs(output_dir, exist_ok=True)
-        filename = os.path.join(output_dir, f"memory_{uuid.uuid4().hex}.json")
-        with open(filename, "w", encoding="utf-8") as file:
-            json.dump(memory_object, file, indent=2, ensure_ascii=False)
-        print(f"Memory saved to {filename}")
-    except IOError as e:
-        print(f"Error saving memory to file: {e}")
-
-def process_input(input_source):
+@utils
+def process_input(input_source: str) -> List[str]:
     """
     Reads input from a text file if the input_source is a file path,
     otherwise treats the input_source as raw text.
-    Splits large text (> CONFIG['CHUNK_SIZE'] characters) into smaller chunks.
-    Returns a list of text chunks.
+    Uses semantic chunking with overlap to maintain context between chunks.
+    
+    Args:
+        input_source (str): Either a file path or raw text to process
+    
+    Returns:
+        list: A list of text chunks with overlap for context preservation
+    
+    Raises:
+        ValueError: If the file size exceeds the maximum allowed size
     """
-    chunk_size = CONFIG["CHUNK_SIZE"]
-
     if os.path.isfile(input_source):
-        # It's a file
         try:
+            file_size = os.path.getsize(input_source)
+            print(f"Processing file of size: {file_size / (1024*1024):.2f} MB")
+            
+            if file_size > CONFIG["MAX_FILE_SIZE"]:
+                raise ValueError(
+                    f"File size ({file_size / (1024*1024):.2f} MB) exceeds maximum allowed size "
+                    f"({CONFIG['MAX_FILE_SIZE'] / (1024*1024):.2f} MB)"
+                )
+            
+            if file_size > CONFIG["LARGE_FILE_THRESHOLD"]:
+                print("Large file detected. Using streaming mode...")
+                return process_large_file(input_source, CONFIG["BUFFER_SIZE"])
+            
             with open(input_source, "r", encoding="utf-8") as file:
                 input_text = file.read()
+                
         except IOError as e:
             print(f"Error reading input file: {e}")
             return []
     else:
-        # Treat input_source as raw text
         input_text = input_source
+        if len(input_text) > CONFIG["LARGE_FILE_THRESHOLD"]:
+            print("Warning: Very large text input. Processing may take a while...")
 
-    # Now split into chunks if needed
-    if len(input_text) <= chunk_size:
-        return [input_text]
-    else:
-        print(f"Input text exceeds {chunk_size} characters. Splitting into chunks.")
-        return [
-            input_text[i : i + chunk_size] 
-            for i in range(0, len(input_text), chunk_size)
-        ]
+    if not input_text:
+        return []
 
-def call_ollama(
-    user_prompt,
-    system_prompt="",
-    model=CONFIG["MODEL_NAME"],
-    temperature=CONFIG["TEMPERATURE"]
-):
-    """
-    Calls the Ollama API at /chat/completions with the provided user and system prompts.
-    Returns the raw text response.
-    """
-    payload = {
-        "model": model,
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user",   "content": user_prompt}
-        ],
-        "temperature": temperature,
-        "options": {
-            "num_ctx": CONFIG["GENERATION_WINDOW"],
-        },
-        "stream": False,
-        "raw": False
-    }
-
-    try:
-        response = requests.post(
-            f"{OLLAMA_URL}chat/completions",
-            json=payload,
-            headers=HEADERS,
-            timeout=CONFIG["REQUEST_TIMEOUT"]
-        )
-        response.raise_for_status()
-        response_data = response.json()
-
-        content = (
-            response_data.get("choices", [{}])[0]
-            .get("message", {})
-            .get("content", "")
-            .strip()
-        )
-        return content
-
-    except requests.RequestException as e:
-        print(f"Error calling Ollama API: {e}")
-        return ""
-    except (KeyError, IndexError) as e:
-        print(f"Unexpected response format from Ollama: {e}")
-        return ""
-
-def extract_json_from_llm_output(llm_output):
-    """
-    Attempts to extract strictly valid JSON from the LLM output.
-    Optionally, we look for [JSON_START] ... [JSON_END] as a sentinel.
-
-    If there's no sentinel, we'll just do a direct json.loads on the entire string.
-    Returns a Python object or None if parsing fails.
-    """
-    sentinel_pattern = r"\[JSON_START\](.*?)\[JSON_END\]"
-    matches = re.findall(sentinel_pattern, llm_output, flags=re.DOTALL)
-    if matches:
-        candidate = matches[0].strip()
-        try:
-            return json.loads(candidate)
-        except json.JSONDecodeError:
-            print("Failed to parse JSON from sentinel-enclosed block.")
-
-    # Fallback: attempt to parse entire string as JSON
-    try:
-        return json.loads(llm_output)
-    except json.JSONDecodeError:
-        print("Failed to parse JSON from entire LLM output.")
-        return None
+    print("Starting text chunking...")
+    return split_text_with_overlap(
+        text=input_text,
+        chunk_size=CONFIG["CHUNK_SIZE"],
+        overlap=CONFIG["CHUNK_OVERLAP"]
+    )
