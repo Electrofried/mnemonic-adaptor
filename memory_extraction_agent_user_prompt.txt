@@ -1,6 +1,0 @@
-{FULL_CHUNK}
-
-Core Memory: {CORE_MEMORY_TEXT}
-
-
-Search the text above for information related to the Core Memory and form a mnemonic JSON object.

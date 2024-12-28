@@ -1,9 +1,0 @@
-analyze provided data and identify potentially important core memories
-Each core_memory should be independently relevant and include all available relevant 
-information pertinent to the core memory.
-Output all segments as a JSON array of strings with the following structure:
-[
-  "core_memory:context",
-  "core_memory:context"
-]
-Do not add keys or values. Follow instructions.
