@@ -1,22 +1,28 @@
 import json
 from helpers import call_ollama, extract_json_from_llm_output
+from config import CONFIG
+from typing import List
 
 # Load static prompts from a JSON file at the module level
 try:
-    with open("prompts.json", "r") as file:
+    with open("prompts.json", "r", encoding="utf-8") as file:
         PROMPTS = json.load(file)
-        if "seg_system_prompt" not in PROMPTS or "seg_user_prompt_template" not in PROMPTS:
-            raise ValueError("JSON file must contain 'seg_system_prompt' and 'seg_user_prompt_template'.")
+        required_keys = ["seg_system_prompt", "seg_user_prompt_template"]
+        if not all(key in PROMPTS for key in required_keys):
+            raise ValueError(f"JSON file must contain {required_keys}")
 except (FileNotFoundError, IOError, ValueError) as e:
     print(f"Error loading static prompts from JSON file: {e}")
     PROMPTS = {}
-
-def segment_input_into_chunks(input_text):
+def segment_input_into_chunks(input_text: str) -> List[str]:
     """
     Requests a segmentation from the LLM that identifies only the most
     important or memorable pieces of the input. We expect a JSON list of
     strings, e.g., ["core_memory: Some text...", ...].
     """
+
+    if not input_text:
+        print("Empty input text received.")
+        return []
 
     if not PROMPTS:
         print("Static prompts are not available. Ensure 'prompts.json' is correctly configured.")
@@ -46,5 +52,7 @@ def segment_input_into_chunks(input_text):
     if not isinstance(segmentation_response, list):
         print("Segmentation did not return a JSON list. Unexpected format.")
         return []
-
     return segmentation_response
+
+print(f"[Config] Using model: {CONFIG['MODEL_NAME']}")
+print(f"[Config] Temperature: {CONFIG['TEMPERATURE']}")
